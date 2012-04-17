@@ -35,7 +35,7 @@ $urls = array(
 );
 
 foreach ($urls as $testUrlSet) {
-    $url = new \webignition\AbsoluteUrl\AbsoluteUrl($testUrlSet['test'], $testUrlSet['source']);
+    $url = new \webignition\AbsoluteUrlDeriver\AbsoluteUrl($testUrlSet['test'], $testUrlSet['source']);
     
     echo 'Finding absolute URL from test URL of '.$testUrlSet['test'].' and source URL of '.$testUrlSet['source']."\n";    
     echo 'Expected: '.$testUrlSet['expected-absolute-url']."\n";
@@ -43,18 +43,5 @@ foreach ($urls as $testUrlSet) {
     
     echo ($testUrlSet['expected-absolute-url'] == $url->getUrl()) ? 'Ok' : 'Fail';
     
-    echo "\n";
-
+    echo "\n\n";
 }
-
-
-$data = array(
-    'test' => 'server.php?param2=value2',
-    'source' => 'http://www.example.com/pathOne/pathTwo/pathThree',
-    'expected-absolute-url' => 'http://www.example.com/pathOne/pathTwo/pathThree/server.php?param2=value2'
-);
-
-
-$url = new \webignition\AbsoluteUrl\AbsoluteUrl($testUrlSet['test'], $testUrlSet['source']);
-echo $url->getUrl();
-// => http://www.example.com/pathOne/pathTwo/pathThree/server.php?param2=value2

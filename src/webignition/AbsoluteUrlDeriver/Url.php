@@ -1,10 +1,10 @@
 <?php
 
-namespace webignition\AbsoluteUrl;
+namespace webignition\AbsoluteUrlDeriver;
 
 /**
  * 
- * @package webignition\AbsoluteUrl
+ * @package webignition\AbsoluteUrlDeriver
  *
  */
 class Url {

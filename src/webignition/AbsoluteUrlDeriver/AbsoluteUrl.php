@@ -1,13 +1,13 @@
 <?php
 
-namespace webignition\AbsoluteUrl;
+namespace webignition\AbsoluteUrlDeriver;
 
 /**
  * 
- * @package webignition\AbsoluteUrl
+ * @package webignition\AbsoluteUrlDeriver
  *
  */
-class AbsoluteUrl extends \webignition\AbsoluteUrl\Url {
+class AbsoluteUrl extends \webignition\AbsoluteUrlDeriver\Url {
     
     
     /**
@@ -24,7 +24,7 @@ class AbsoluteUrl extends \webignition\AbsoluteUrl\Url {
      */
     public function __construct($url, $sourceUrl) {
         parent::__construct($url);
-        $this->sourceUrl = new \webignition\AbsoluteUrl\Url($sourceUrl);
+        $this->sourceUrl = new \webignition\AbsoluteUrlDeriver\Url($sourceUrl);
     }
     
     
