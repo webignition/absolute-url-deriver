@@ -2,7 +2,7 @@
     "name": "webignition/absolute-url",
     "description": "Represents an absolute URL, derives an absolute URL from relative and source URLs",
     "keywords": ["url", "absolute"],
-    "homepage": "https://github.com/webignition/absolute-url",
+    "homepage": "https://github.com/webignition/absolute-url-deriver",
     "type": "library",
     "license": "WTFPL",
     "authors": [
