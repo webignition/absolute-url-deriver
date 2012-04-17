@@ -22,3 +22,11 @@ Usage
     $url = new \webignition\AbsoluteUrl\AbsoluteUrl($testUrlSet['test'], $testUrlSet['source']);
     echo $url->getUrl();
     // => http://www.example.com/pathOne/pathTwo/pathThree/server.php?param2=value2
+
+
+Further Examples
+----------------
+
+See [/tests/www/index.php][1] for further examples of how a relative URL and source URL translate into a absolute URL.
+
+[1]: https://github.com/webignition/absolute-url/blob/master/tests/www/index.php
