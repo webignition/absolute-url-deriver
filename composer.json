@@ -1,0 +1,17 @@
+{
+    "name": "webignition/absolute-url",
+    "description": "Represents an absolute URL, derives an absolute URL from relative and source URLs",
+    "keywords": ["url", "absolute"],
+    "homepage": "https://github.com/webignition/absolute-url",
+    "type": "library",
+    "license": "WTFPL",
+    "authors": [
+        {
+            "name": "Jon Cram",
+            "email": "jon@webignition.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    }
+}
