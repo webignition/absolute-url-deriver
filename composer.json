@@ -1,5 +1,5 @@
 {
-    "name": "webignition/absolute-url",
+    "name": "webignition/absolute-url-deriver",
     "description": "Represents an absolute URL, derives an absolute URL from relative and source URLs",
     "keywords": ["url", "absolute"],
     "homepage": "https://github.com/webignition/absolute-url-deriver",
