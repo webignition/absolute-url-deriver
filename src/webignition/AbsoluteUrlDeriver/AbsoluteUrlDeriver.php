@@ -53,13 +53,14 @@ class AbsoluteUrlDeriver {
     private function deriveAbsoluteUrl() {
         $this->absoluteUrl = clone $this->nonAbsoluteUrl;
         
-        $this->derivePath();        
-        $this->deriveHost();
-        $this->deriveScheme();
-        
-        $this->deriveUser();
-        $this->derivePass();
-        
+        if (!$this->absoluteUrl->isAbsolute()) {        
+            $this->derivePath();        
+            $this->deriveHost();
+            $this->deriveScheme();
+
+            $this->deriveUser();
+            $this->derivePass();
+        }        
     }
     
     private function deriveHost() {
