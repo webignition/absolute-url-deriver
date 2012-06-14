@@ -82,7 +82,12 @@ class AbsoluteUrlDeriver {
     private function derivePath() {        
         if ($this->absoluteUrl->hasPath() && $this->absoluteUrl->getPath()->isRelative()) {
             if ($this->sourceUrl->hasPath()) {
-                $this->absoluteUrl->setPath($this->sourceUrl->getPath() . $this->absoluteUrl->getPath());
+                $pathDirectory = $this->sourceUrl->getPath()->hasFilename() ? dirname($this->sourceUrl->getPath()) : $this->sourceUrl->getPath();
+                
+                $derivedPath = $pathDirectory;
+                $derivedPath .= $this->absoluteUrl->getPath();
+                
+                $this->absoluteUrl->setPath($derivedPath);
             }
         }
         
@@ -90,7 +95,7 @@ class AbsoluteUrlDeriver {
             if ($this->sourceUrl->hasPath()) {                
                 $this->absoluteUrl->setPath($this->sourceUrl->getPath());
             }
-        }        
+        }       
     }
     
     private function deriveUser() {

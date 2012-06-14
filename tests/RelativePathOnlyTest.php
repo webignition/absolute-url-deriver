@@ -29,6 +29,15 @@ class RelativePathOnlyTest extends PHPUnit_Framework_TestCase {
         );
 
         $this->assertEquals('http://:pass@www.example.com/server.php', (string)$deriver->getAbsoluteUrl());        
-    }     
-  
+    }
+    
+    public function testSourceHasFilePath() {
+        $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
+            'example.html',
+            'http://example.com/index.html'
+        );
+
+        $this->assertEquals('http://example.com/example.html', (string)$deriver->getAbsoluteUrl());        
+    }    
+    
 }
