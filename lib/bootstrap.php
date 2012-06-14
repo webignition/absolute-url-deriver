@@ -1,5 +1,5 @@
 <?php
-namespace webignition\HtmlDocumentLinkUrlFinder;
+namespace webignition\AbsoluteUrlDeriver;
 
 function autoload( $rootDir ) {
     spl_autoload_register(function( $className ) use ( $rootDir ) {        
@@ -16,3 +16,5 @@ function autoload( $rootDir ) {
 }
 
 autoload( __DIR__ . '/../src');
+autoload( __DIR__ . '/../tests');
+autoload( __DIR__ . '/../vendor/webignition/url/src');
