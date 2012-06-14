@@ -12,6 +12,13 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0"
-    }
+        "php": ">=5.3.0",
+        "webignition/url": "*"        
+    },
+    "repositories": [
+        {
+            "type":"vcs",
+            "url": "https://github.com/webignition/url"
+        }        
+    ]    
 }
