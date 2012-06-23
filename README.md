@@ -18,15 +18,12 @@ Usage
 
 ```php
 <?php
-$data = array(
-    'test' => 'server.php?param2=value2',
-    'source' => 'http://www.example.com/pathOne/pathTwo/pathThree'
+$deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
+    '/server.php?param1=value1',
+    'http://www.example.com/pathOne/pathTwo/pathThree'
 );
 
-
-$url = new \webignition\AbsoluteUrl\AbsoluteUrl($testUrlSet['test'], $testUrlSet['source']);
-echo $url->getUrl();
-// => http://www.example.com/pathOne/pathTwo/pathThree/server.php?param2=value2
+$this->assertEquals('http://www.example.com/server.php?param1=value1', $deriver->getAbsoluteUrl());
 ```
 
 Building
