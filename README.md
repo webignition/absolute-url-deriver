@@ -41,6 +41,10 @@ and update your dependencies.
         {
             "type":"vcs",
             "url": "https://github.com/webignition/absolute-url-deriver"
+        },
+        {
+            "type":"vcs",
+            "url": "https://github.com/webignition/url"
         }
     ]
 
@@ -55,7 +59,7 @@ This project has external dependencies managed with [composer][3]. Get and insta
     git clone git@github.com:webignition/absolute-url-deriver.git.
 
     # Retrieve/update dependencies
-    composer.phar update
+    composer.phar install
 
 Testing
 -------
