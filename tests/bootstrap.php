@@ -1,10 +1,5 @@
 <?php
-namespace webignition\AbsoluteUrlDeriver;
-
-// Enable maximum error reporting for unit tests
-if (substr($_SERVER['SCRIPT_NAME'], (-1 * strlen('phpunit'))) === 'phpunit') {
-    error_reporting(-1);
-}
+require_once  __DIR__ . '/../vendor/autoload.php';
 
 function autoload( $rootDir ) {
     spl_autoload_register(function( $className ) use ( $rootDir ) {        
@@ -20,6 +15,5 @@ function autoload( $rootDir ) {
     });
 }
 
-autoload( __DIR__ . '/../src');
-autoload( __DIR__ . '/../tests');
-autoload( __DIR__ . '/../vendor/webignition/url/src');
+autoload( '/usr/share/php' );
+autoload( __DIR__ . '/');

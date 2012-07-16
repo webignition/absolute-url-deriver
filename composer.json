@@ -1,24 +1,21 @@
 {
     "name": "webignition/absolute-url-deriver",
-    "description": "Represents an absolute URL, derives an absolute URL from relative and source URLs",
+    "description": "Derives an absolute URL from relative and source URLs",
     "keywords": ["url", "absolute"],
     "homepage": "https://github.com/webignition/absolute-url-deriver",
     "type": "library",
-    "license": "WTFPL",
+    "license": "MIT",
     "authors": [
         {
             "name": "Jon Cram",
             "email": "jon@webignition.net"
         }
     ],
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },     
     "require": {
         "php": ">=5.3.0",
-        "webignition/url": "*"        
-    },
-    "repositories": [
-        {
-            "type":"vcs",
-            "url": "https://github.com/webignition/url"
-        }        
-    ]    
+        "webignition/url": "1.0"        
+    }   
 }
