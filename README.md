@@ -36,17 +36,7 @@ and update your dependencies.
 
     "require": {
         "webignition/absolute-url-deriver": "*"      
-    },
-    "repositories": [
-        {
-            "type":"vcs",
-            "url": "https://github.com/webignition/absolute-url-deriver"
-        },
-        {
-            "type":"vcs",
-            "url": "https://github.com/webignition/url"
-        }
-    ]
+    }
 
 #### Developing
 
