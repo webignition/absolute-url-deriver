@@ -85,16 +85,16 @@ class AbsoluteUrlDeriver {
                 /* @var $pathDirectory \webignition\NormalisedUrl\Path\Path */
                 $rawPathDirectory = $this->sourceUrl->getPath()->hasFilename() ? dirname($this->sourceUrl->getPath()) : (string)$this->sourceUrl->getPath();
                 
-                $pathDirectory = new \webignition\NormalisedUrl\Path\Path($rawPathDirectory);                  
+                $pathDirectory = new \webignition\NormalisedUrl\Path\Path($rawPathDirectory);                                  
                 $derivedPath = $pathDirectory;
                 
                 if (!$pathDirectory->hasTrailingSlash()) {
                     $derivedPath .= '/';
                 }
                 
-                $derivedPath .= $this->absoluteUrl->getPath();
-                
-                $this->absoluteUrl->setPath($derivedPath);
+                $derivedPath .= $this->absoluteUrl->getPath();                
+                $normalisedDerivedPath = new \webignition\NormalisedUrl\Path\Path((string)$derivedPath);                  
+                $this->absoluteUrl->setPath($normalisedDerivedPath);
             }
         }
         
