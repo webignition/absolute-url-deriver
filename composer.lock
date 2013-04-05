@@ -1,18 +1,18 @@
 {
-    "hash": "e8b280841e063ade9f4f1aa5d17de882",
+    "hash": "635ea9a0c85a8885b1aa7af2ca959106",
     "packages": [
         {
             "name": "webignition/url",
-            "version": "1.7.1",
+            "version": "1.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/url.git",
-                "reference": "1.7.1"
+                "reference": "1.7.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/url/zipball/1.7.1",
-                "reference": "1.7.1",
+                "url": "https://api.github.com/repos/webignition/url/zipball/1.7.2",
+                "reference": "1.7.2",
                 "shasum": ""
             },
             "require": {
@@ -40,7 +40,7 @@
             "keywords": [
                 "url"
             ],
-            "time": "2013-03-18 12:47:00"
+            "time": "2013-04-05 15:56:13"
         }
     ],
     "packages-dev": [
