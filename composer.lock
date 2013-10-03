@@ -1,18 +1,22 @@
 {
-    "hash": "635ea9a0c85a8885b1aa7af2ca959106",
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+    ],
+    "hash": "ec882615f98751c013ea6d00cb079520",
     "packages": [
         {
             "name": "webignition/url",
-            "version": "1.7.2",
+            "version": "1.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/url.git",
-                "reference": "1.7.2"
+                "reference": "c93cae6c5d5fc8fe4834877a697bc9764c365045"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/url/zipball/1.7.2",
-                "reference": "1.7.2",
+                "url": "https://api.github.com/repos/webignition/url/zipball/c93cae6c5d5fc8fe4834877a697bc9764c365045",
+                "reference": "c93cae6c5d5fc8fe4834877a697bc9764c365045",
                 "shasum": ""
             },
             "require": {
@@ -40,7 +44,7 @@
             "keywords": [
                 "url"
             ],
-            "time": "2013-04-05 15:56:13"
+            "time": "2013-10-03 10:01:18"
         }
     ],
     "packages-dev": [
