@@ -8,7 +8,7 @@ class InputHasRelativePathOnlyTest extends PHPUnit_Framework_TestCase {
             'http://www.example.com/pathOne/pathTwo/pathThree'
         );
 
-        $this->assertEquals('http://www.example.com/pathOne/pathTwo/pathThree/server.php?param1=value1', (string)$deriver->getAbsoluteUrl());
+        $this->assertEquals('http://www.example.com/pathOne/pathTwo/server.php?param1=value1', (string)$deriver->getAbsoluteUrl());
     } 
     
     public function testAbsolutePathHasDotDotDirecoryAndSourceHasFileName() {
@@ -63,6 +63,6 @@ class InputHasRelativePathOnlyTest extends PHPUnit_Framework_TestCase {
             'http://www.example.com/pathOne'
         );
 
-        $this->assertEquals('http://www.example.com/pathOne/jquery.js', (string)$deriver->getAbsoluteUrl());
+        $this->assertEquals('http://www.example.com/jquery.js', (string)$deriver->getAbsoluteUrl());
     }      
 }
