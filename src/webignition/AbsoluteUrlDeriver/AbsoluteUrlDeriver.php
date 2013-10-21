@@ -35,15 +35,32 @@ class AbsoluteUrlDeriver {
      * @param string $nonAbsoluteUrl
      * @param string $sourceUrl 
      */
-    public function __construct($nonAbsoluteUrl, $sourceUrl) {
+    public function __construct($nonAbsoluteUrl = null, $sourceUrl = null) {
+        if (!is_null($nonAbsoluteUrl) && !is_null($sourceUrl)) {
+            $this->init($nonAbsoluteUrl, $sourceUrl);
+        }
+    }
+    
+    
+    /**
+     * 
+     * @param string $nonAbsoluteUrl
+     * @param string $sourceUrl
+     */
+    public function init($nonAbsoluteUrl, $sourceUrl) {        
         $this->nonAbsoluteUrl = (trim($nonAbsoluteUrl) == '') 
                 ? new \webignition\Url\Url($sourceUrl) 
                 : new \webignition\Url\Url($nonAbsoluteUrl);
         
-        $this->sourceUrl = new \webignition\NormalisedUrl\NormalisedUrl($sourceUrl);        
+        $this->sourceUrl = new \webignition\NormalisedUrl\NormalisedUrl($sourceUrl);  
+        $this->absoluteUrl = null;
     }
     
     
+    /**
+     * 
+     * @return \webignition\Url\Url
+     */
     public function getAbsoluteUrl() {
         if (is_null($this->absoluteUrl)) {
             $this->deriveAbsoluteUrl();            
