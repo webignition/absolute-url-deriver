@@ -2,23 +2,21 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
-class AbsouteUrlRemainsUnchangedTest extends BaseTest {   
+class AbsouteUrlRemainsUnchangedTest extends BaseTest {
     
-    public function testAbsoluteUrlWithNoPath() {      
-        $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
-            'http://www.example.com/',
-            'http://www.example.com/'
-         );
-        
-        $this->assertEquals('http://www.example.com/', (string)$deriver->getAbsoluteUrl());
+    public function testAbsoluteUrlWithNoPath() {
+        $this->assertDerivedUrl(array(
+            'non-absolute-url' => 'http://www.example.com/',
+            'source-url' => 'http://www.example.com/',
+            'expected-derived-url' => 'http://www.example.com/'
+        ));
     }   
     
     public function testAbsoluteUrlWithPath() {      
-        $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
-            'http://www.example.com/pathOne',
-            'http://www.example.com/'
-        );
-        
-        $this->assertEquals('http://www.example.com/pathOne', (string)$deriver->getAbsoluteUrl());
+        $this->assertDerivedUrl(array(
+            'non-absolute-url' => 'http://www.example.com/pathOne',
+            'source-url' => 'http://www.example.com/',
+            'expected-derived-url' => 'http://www.example.com/pathOne'
+        ));
     }    
 }

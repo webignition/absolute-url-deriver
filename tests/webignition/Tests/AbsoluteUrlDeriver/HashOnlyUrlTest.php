@@ -5,20 +5,18 @@ namespace webignition\Tests\AbsoluteUrlDeriver;
 class HashOnlyUrlTest extends BaseTest {   
     
     public function testHashOnlyNonAbsoluteUrl() {        
-        $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
-            '#',
-            'http://example.com/'
-        );
-        
-        $this->assertEquals('http://example.com/#', (string)$deriver->getAbsoluteUrl());
+        $this->assertDerivedUrl(array(
+            'non-absolute-url' => '#',
+            'source-url' => 'http://example.com/',
+            'expected-derived-url' => 'http://example.com/#'
+        ));
     }   
     
     public function testHashAndIdentityNonAbsoluteUrl() {        
-        $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
-            '#foo',
-            'http://example.com/'
-        );
-        
-        $this->assertEquals('http://example.com/#foo', (string)$deriver->getAbsoluteUrl());
+        $this->assertDerivedUrl(array(
+            'non-absolute-url' => '#foo',
+            'source-url' => 'http://example.com/',
+            'expected-derived-url' => 'http://example.com/#foo'
+        ));
     }    
 }

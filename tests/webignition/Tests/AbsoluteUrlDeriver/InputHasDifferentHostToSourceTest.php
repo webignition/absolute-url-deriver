@@ -5,12 +5,11 @@ namespace webignition\Tests\AbsoluteUrlDeriver;
 class InputHasDifferentHostToSourceTest extends BaseTest {
     
     public function testAddSchemeHostFromSource() {
-        $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
-            'http://blog.limegreentangerine.co.uk',
-            'http://www.limegreentangerine.co.uk/branding/'
-        );
-
-        $this->assertEquals('http://blog.limegreentangerine.co.uk', (string)$deriver->getAbsoluteUrl());        
+        $this->assertDerivedUrl(array(
+            'non-absolute-url' => 'http://foo.example.com',
+            'source-url' => 'http://www.example.com/path/',
+            'expected-derived-url' => 'http://foo.example.com'
+        ));       
     }   
   
 }

@@ -5,39 +5,35 @@ namespace webignition\Tests\AbsoluteUrlDeriver;
 class RelativePathOnlyTest extends BaseTest {
     
     public function testAddSchemeHostFromSource() {
-        $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
-            'server.php',
-            'http://www.example.com'
-        );
-
-        $this->assertEquals('http://www.example.com/server.php', (string)$deriver->getAbsoluteUrl());        
+        $this->assertDerivedUrl(array(
+            'non-absolute-url' => 'server.php',
+            'source-url' => 'http://www.example.com',
+            'expected-derived-url' => 'http://www.example.com/server.php'
+        ));
     }
     
     public function testAddSchemeHostUserFromSource() {
-        $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
-            'server.php',
-            'http://user:@www.example.com'
-        );
-
-        $this->assertEquals('http://user:@www.example.com/server.php', (string)$deriver->getAbsoluteUrl());        
+        $this->assertDerivedUrl(array(
+            'non-absolute-url' => 'server.php',
+            'source-url' => 'http://user:@www.example.com',
+            'expected-derived-url' => 'http://user:@www.example.com/server.php'
+        ));
     }   
     
     public function testAddSchemeHostPassFromSource() {
-        $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
-            'server.php',
-            'http://:pass@www.example.com'
-        );
-
-        $this->assertEquals('http://:pass@www.example.com/server.php', (string)$deriver->getAbsoluteUrl());        
+        $this->assertDerivedUrl(array(
+            'non-absolute-url' => 'server.php',
+            'source-url' => 'http://:pass@www.example.com',
+            'expected-derived-url' => 'http://:pass@www.example.com/server.php'
+        ));        
     }
     
     public function testSourceHasFilePath() {
-        $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
-            'example.html',
-            'http://example.com/index.html'
-        );
-
-        $this->assertEquals('http://example.com/example.html', (string)$deriver->getAbsoluteUrl());        
+        $this->assertDerivedUrl(array(
+            'non-absolute-url' => 'example.html',
+            'source-url' => 'http://example.com/index.html',
+            'expected-derived-url' => 'http://example.com/example.html'
+        ));        
     }    
     
 }

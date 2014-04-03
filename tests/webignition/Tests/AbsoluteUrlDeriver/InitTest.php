@@ -9,5 +9,5 @@ class InitTest extends BaseTest {
         $deriver->init('/foo/bar.html', 'http://example.com/');
         
         $this->assertEquals('http://example.com/foo/bar.html', (string)$deriver->getAbsoluteUrl());
-    }
+    }  
 }

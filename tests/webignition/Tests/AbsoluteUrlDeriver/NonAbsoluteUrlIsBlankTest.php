@@ -9,15 +9,11 @@ class NonAbsoluteUrlIsBlankTest extends BaseTest {
      * the source as the absolute URL
      */
     public function testBlankNonAbsoluteUrl() {
-        $nonAbsoluteUrl = '';
-        $sourceUrl = 'http://example.com/path/index.html';
-
-        $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
-            $nonAbsoluteUrl,
-            $sourceUrl
-        );
-
-        $this->assertEquals($sourceUrl, (string)$deriver->getAbsoluteUrl());        
+        $this->assertDerivedUrl(array(
+            'non-absolute-url' => '',
+            'source-url' => 'http://example.com/path/index.html',
+            'expected-derived-url' => 'http://example.com/path/index.html'
+        ));      
     }    
   
 }
