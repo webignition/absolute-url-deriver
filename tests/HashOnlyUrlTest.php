@@ -1,6 +1,8 @@
 <?php
 
-class HashOnlyUrlTest extends PHPUnit_Framework_TestCase {   
+namespace webignition\Tests\AbsoluteUrlDeriver;
+
+class HashOnlyUrlTest extends \PHPUnit_Framework_TestCase {   
     
     public function testHashOnlyNonAbsoluteUrl() {        
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

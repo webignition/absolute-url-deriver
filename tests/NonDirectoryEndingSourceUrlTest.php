@@ -1,6 +1,8 @@
 <?php
 
-class NonDirectoryEndingSourceUrlTest extends PHPUnit_Framework_TestCase {   
+namespace webignition\Tests\AbsoluteUrlDeriver;
+
+class NonDirectoryEndingSourceUrlTest extends \PHPUnit_Framework_TestCase {   
     
     public function testWithSourceUrlNotEndingWithASlash() {        
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

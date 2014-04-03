@@ -1,6 +1,8 @@
 <?php
 
-class InputHasRelativePathOnlyTest extends PHPUnit_Framework_TestCase {   
+namespace webignition\Tests\AbsoluteUrlDeriver;
+
+class InputHasRelativePathOnlyTest extends \PHPUnit_Framework_TestCase {   
     
     public function testRelativePathIsTransformedIntoCorrectAbsoluteUrl() {
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

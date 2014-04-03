@@ -1,6 +1,8 @@
 <?php
 
-class RelativePathOnlyTest extends PHPUnit_Framework_TestCase {
+namespace webignition\Tests\AbsoluteUrlDeriver;
+
+class RelativePathOnlyTest extends \PHPUnit_Framework_TestCase {
     
     public function testAddSchemeHostFromSource() {
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

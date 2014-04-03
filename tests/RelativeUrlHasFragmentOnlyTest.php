@@ -1,6 +1,8 @@
 <?php
 
-class RelativeUrlHasFragmentOnlyTest extends PHPUnit_Framework_TestCase {
+namespace webignition\Tests\AbsoluteUrlDeriver;
+
+class RelativeUrlHasFragmentOnlyTest extends \PHPUnit_Framework_TestCase {
     
     public function testThingy() {
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

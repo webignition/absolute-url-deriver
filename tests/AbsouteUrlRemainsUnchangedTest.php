@@ -1,6 +1,8 @@
 <?php
 
-class AbsouteUrlRemainsUnchangedTest extends PHPUnit_Framework_TestCase {   
+namespace webignition\Tests\AbsoluteUrlDeriver;
+
+class AbsouteUrlRemainsUnchangedTest extends \PHPUnit_Framework_TestCase {   
     
     public function testAbsoluteUrlWithNoPath() {      
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

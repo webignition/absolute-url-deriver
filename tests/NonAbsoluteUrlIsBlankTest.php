@@ -1,6 +1,8 @@
 <?php
 
-class NonAbsoluteUrlIsBlankTest extends PHPUnit_Framework_TestCase {
+namespace webignition\Tests\AbsoluteUrlDeriver;
+
+class NonAbsoluteUrlIsBlankTest extends \PHPUnit_Framework_TestCase {
     
     /**
      * A blank non-absolute URL and a source URL should return

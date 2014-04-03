@@ -1,6 +1,8 @@
 <?php
 
-class InputWithProtocolRelativeUrlAndNoPathDoesNotTakeAbsoluteUrlPathTest extends PHPUnit_Framework_TestCase {   
+namespace webignition\Tests\AbsoluteUrlDeriver;
+
+class InputWithProtocolRelativeUrlAndNoPathDoesNotTakeAbsoluteUrlPathTest extends \PHPUnit_Framework_TestCase {   
     
     public function testProtocolRelativeNonAbsoluteUrlWithoutPathDoesNotTakeAbsoluteUrlPath() {        
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
