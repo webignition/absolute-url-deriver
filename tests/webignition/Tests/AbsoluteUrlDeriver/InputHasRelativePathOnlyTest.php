@@ -2,7 +2,7 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
-class InputHasRelativePathOnlyTest extends \PHPUnit_Framework_TestCase {   
+class InputHasRelativePathOnlyTest extends BaseTest {   
     
     public function testRelativePathIsTransformedIntoCorrectAbsoluteUrl() {
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

@@ -2,7 +2,7 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
-class RelativePathOnlyTest extends \PHPUnit_Framework_TestCase {
+class RelativePathOnlyTest extends BaseTest {
     
     public function testAddSchemeHostFromSource() {
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

@@ -2,7 +2,7 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
-class AbsouteUrlRemainsUnchangedTest extends \PHPUnit_Framework_TestCase {   
+class AbsouteUrlRemainsUnchangedTest extends BaseTest {   
     
     public function testAbsoluteUrlWithNoPath() {      
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

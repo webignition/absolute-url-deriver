@@ -2,7 +2,7 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
-class NonDirectoryEndingSourceUrlTest extends \PHPUnit_Framework_TestCase {   
+class NonDirectoryEndingSourceUrlTest extends BaseTest {   
     
     public function testWithSourceUrlNotEndingWithASlash() {        
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

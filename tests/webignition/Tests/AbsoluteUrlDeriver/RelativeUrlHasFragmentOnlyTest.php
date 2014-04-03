@@ -2,7 +2,7 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
-class RelativeUrlHasFragmentOnlyTest extends \PHPUnit_Framework_TestCase {
+class RelativeUrlHasFragmentOnlyTest extends BaseTest {
     
     public function testThingy() {
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

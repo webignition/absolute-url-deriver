@@ -2,7 +2,7 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
-class InitTest extends \PHPUnit_Framework_TestCase {   
+class InitTest extends BaseTest {   
     
     public function testInitialiseViaInitInsteadOfConstructor() {      
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver();

@@ -2,7 +2,7 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
-class InputHasDifferentHostToSourceTest extends \PHPUnit_Framework_TestCase {
+class InputHasDifferentHostToSourceTest extends BaseTest {
     
     public function testAddSchemeHostFromSource() {
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

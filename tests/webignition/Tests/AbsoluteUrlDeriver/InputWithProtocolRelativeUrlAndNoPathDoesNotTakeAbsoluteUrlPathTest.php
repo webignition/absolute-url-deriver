@@ -2,7 +2,7 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
-class InputWithProtocolRelativeUrlAndNoPathDoesNotTakeAbsoluteUrlPathTest extends \PHPUnit_Framework_TestCase {   
+class InputWithProtocolRelativeUrlAndNoPathDoesNotTakeAbsoluteUrlPathTest extends BaseTest {   
     
     public function testProtocolRelativeNonAbsoluteUrlWithoutPathDoesNotTakeAbsoluteUrlPath() {        
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(

@@ -2,7 +2,7 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
-class NonAbsoluteUrlIsBlankTest extends \PHPUnit_Framework_TestCase {
+class NonAbsoluteUrlIsBlankTest extends BaseTest {
     
     /**
      * A blank non-absolute URL and a source URL should return

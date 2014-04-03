@@ -2,7 +2,7 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
-class HashOnlyUrlTest extends \PHPUnit_Framework_TestCase {   
+class HashOnlyUrlTest extends BaseTest {   
     
     public function testHashOnlyNonAbsoluteUrl() {        
         $deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
