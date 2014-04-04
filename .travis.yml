@@ -10,5 +10,4 @@ before_script:
   - php composer.phar install
   
 matrix:
-  allow_failures:
-    - php: hhvm  
+  fast_finish: true
