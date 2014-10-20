@@ -79,6 +79,7 @@ class AbsoluteUrlDeriver {
             } else {
                 $this->derivePath();        
                 $this->deriveHost();
+                $this->derivePort();
                 $this->deriveScheme();
 
                 $this->deriveUser();
@@ -94,6 +95,27 @@ class AbsoluteUrlDeriver {
             }
         }        
     }
+
+    private function derivePort() {
+        if (!$this->absoluteUrl->hasPort()) {
+            if ($this->sourceUrl->hasPort()) {
+                $scheme = null;
+                if ($this->sourceUrl->hasScheme()) {
+                    $scheme = $this->sourceUrl->getScheme();
+                }
+                $port = $this->sourceUrl->getPort();
+                // Note: the Url class seems to add the port specification even 
+                // when the standard HTTPS port is used. So in order for the 
+                // tests (which test "expected" behavior) to pass, don't set the 
+                // port if it is using the standard HTTPS port. However, if the 
+                // scheme is non-https and port 443 is specified, then add the 
+                // port anyway.
+                if ($port != 443 || $scheme != 'https') {
+                    $this->absoluteUrl->setPort($port);
+                }
+            }
+        }
+    }    
     
     private function deriveScheme() {
         if (!$this->absoluteUrl->hasScheme()) {
