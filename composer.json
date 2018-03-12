@@ -22,7 +22,6 @@
         "webignition/url": ">=1.9.8"
     },
     "require-dev": {
-        "symfony/class-loader": "*",
         "phpunit/phpunit": "3.7.*"
     },
     "minimum-stability":"dev",
