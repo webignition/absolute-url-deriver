@@ -12,10 +12,22 @@
         }
     ],
     "autoload": {
-        "psr-0": {
-            "webignition\\Tests": "tests/",
-            "": "src/"
+        "psr-4": {
+            "webignition\\AbsoluteUrlDeriver\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "webignition\\Tests\\AbsoluteUrlDeriver\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit --colors=always",
+        "cs": "./vendor/bin/phpcs src tests --colors --standard=PSR2",
+        "ci": [
+            "@composer cs",
+            "@composer test"
+        ]
     },
     "require": {
         "php": ">=5.6.0",
