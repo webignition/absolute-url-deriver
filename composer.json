@@ -16,15 +16,15 @@
             "webignition\\Tests": "tests/",
             "": "src/"
         }
-    },       
+    },
     "require": {
-        "php": ">=5.4.0",
-        "webignition/url": ">=1.9.8"        
+        "php": ">=5.6.0",
+        "webignition/url": ">=1.9.8"
     },
     "require-dev": {
         "symfony/class-loader": "*",
         "phpunit/phpunit": "3.7.*"
-    },     
+    },
     "minimum-stability":"dev",
     "prefer-stable":true
 }
