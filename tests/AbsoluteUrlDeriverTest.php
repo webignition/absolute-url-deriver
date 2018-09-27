@@ -5,7 +5,7 @@ namespace webignition\Tests\AbsoluteUrlDeriver;
 use webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver;
 use webignition\Url\Url;
 
-class AbsoluteUrlDeriverTest extends \PHPUnit_Framework_TestCase
+class AbsoluteUrlDeriverTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetAbsoluteUrlEmptyInput()
     {
