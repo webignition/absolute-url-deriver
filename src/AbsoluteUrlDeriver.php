@@ -26,22 +26,14 @@ class AbsoluteUrlDeriver
      */
     private $absoluteUrl = null;
 
-    /**
-     * @param string $nonAbsoluteUrl
-     * @param string $sourceUrl
-     */
-    public function __construct($nonAbsoluteUrl = null, $sourceUrl = null)
+    public function __construct(?string $nonAbsoluteUrl = null, ?string $sourceUrl = null)
     {
         if (!is_null($nonAbsoluteUrl) && !is_null($sourceUrl)) {
             $this->init($nonAbsoluteUrl, $sourceUrl);
         }
     }
 
-    /**
-     * @param string $nonAbsoluteUrl
-     * @param string $sourceUrl
-     */
-    public function init($nonAbsoluteUrl, $sourceUrl)
+    public function init(string $nonAbsoluteUrl, string $sourceUrl)
     {
         $this->nonAbsoluteUrl = (trim($nonAbsoluteUrl) == '')
                 ? new Url($sourceUrl)
@@ -53,10 +45,7 @@ class AbsoluteUrlDeriver
         $this->deriveAbsoluteUrl();
     }
 
-    /**
-     * @return Url
-     */
-    public function getAbsoluteUrl()
+    public function getAbsoluteUrl(): ?Url
     {
         return $this->absoluteUrl;
     }

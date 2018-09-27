@@ -31,10 +31,7 @@ class AbsoluteUrlDeriverTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedAbsoluteUrl, (string)$absoluteUrl);
     }
 
-    /**
-     * @return array
-     */
-    public function getAbsoluteUrlDataProvider()
+    public function getAbsoluteUrlDataProvider(): array
     {
         return [
             'non-absolute url is empty' => [
