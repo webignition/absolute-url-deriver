@@ -5,7 +5,7 @@ namespace webignition\Tests\AbsoluteUrlDeriver;
 use webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver;
 use webignition\Url\Url;
 
-class AbsoluteUrlDeriverTest extends \PHPUnit_Framework_TestCase
+class AbsoluteUrlDeriverTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetAbsoluteUrlEmptyInput()
     {
@@ -31,10 +31,7 @@ class AbsoluteUrlDeriverTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedAbsoluteUrl, (string)$absoluteUrl);
     }
 
-    /**
-     * @return array
-     */
-    public function getAbsoluteUrlDataProvider()
+    public function getAbsoluteUrlDataProvider(): array
     {
         return [
             'non-absolute url is empty' => [
