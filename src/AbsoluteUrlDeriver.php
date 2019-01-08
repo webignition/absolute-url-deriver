@@ -2,9 +2,10 @@
 
 namespace webignition\AbsoluteUrlDeriver;
 
-use webignition\NormalisedUrl\NormalisedUrl;
-use webignition\NormalisedUrl\Path\Path;
-use webignition\Url\Url;
+use Psr\Http\Message\UriInterface;
+use webignition\Uri\Normalizer;
+use webignition\Uri\Path;
+use webignition\Uri\Uri;
 
 class AbsoluteUrlDeriver
 {
@@ -12,17 +13,17 @@ class AbsoluteUrlDeriver
     const SCHEME_HTTPS = 'https';
 
     /**
-     * @var NormalisedUrl
+     * @var UriInterface
      */
     private $nonAbsoluteUrl = null;
 
     /**
-     * @var NormalisedUrl
+     * @var UriInterface
      */
     private $sourceUrl = null;
 
     /**
-     * @var NormalisedUrl
+     * @var UriInterface
      */
     private $absoluteUrl = null;
 
@@ -36,16 +37,18 @@ class AbsoluteUrlDeriver
     public function init(string $nonAbsoluteUrl, string $sourceUrl)
     {
         $this->nonAbsoluteUrl = (trim($nonAbsoluteUrl) == '')
-                ? new Url($sourceUrl)
-                : new Url($nonAbsoluteUrl);
+                ? new Uri($sourceUrl)
+                : new Uri($nonAbsoluteUrl);
 
-        $this->sourceUrl = new NormalisedUrl($sourceUrl);
+        $this->sourceUrl = new Uri($sourceUrl);
         $this->absoluteUrl = null;
 
         $this->deriveAbsoluteUrl();
+
+        $this->absoluteUrl = Normalizer::normalize($this->absoluteUrl);
     }
 
-    public function getAbsoluteUrl(): ?Url
+    public function getAbsoluteUrl(): ?UriInterface
     {
         return $this->absoluteUrl;
     }
@@ -54,8 +57,12 @@ class AbsoluteUrlDeriver
     {
         $this->absoluteUrl = clone $this->nonAbsoluteUrl;
 
-        if (!$this->absoluteUrl->isAbsolute()) {
-            if ($this->absoluteUrl->isProtocolRelative()) {
+        $isAbsolute = !empty($this->absoluteUrl->getScheme()) && !empty($this->absoluteUrl->getHost());
+
+        if (!$isAbsolute) {
+            $isProtocolRelative = empty($this->absoluteUrl->getScheme()) && !empty($this->absoluteUrl->getHost());
+
+            if ($isProtocolRelative) {
                 $this->deriveScheme();
             } else {
                 $this->derivePath();
@@ -63,34 +70,30 @@ class AbsoluteUrlDeriver
                 $this->derivePort();
                 $this->deriveScheme();
 
-                $this->deriveUser();
-                $this->derivePass();
+                $this->deriveUserInfo();
             }
         }
     }
 
     private function deriveHost()
     {
-        if (!$this->absoluteUrl->hasHost()) {
-            if ($this->sourceUrl->hasHost()) {
-                $this->absoluteUrl->setHost($this->sourceUrl->getHost());
+        if (empty($this->absoluteUrl->getHost())) {
+            if (!empty($this->sourceUrl->getHost())) {
+                $this->absoluteUrl = $this->absoluteUrl->withHost($this->sourceUrl->getHost());
             }
         }
     }
 
     private function derivePort()
     {
-        if (!$this->absoluteUrl->hasPort()) {
-            if ($this->sourceUrl->hasPort()) {
-                $scheme = $this->sourceUrl->hasScheme()
-                    ? $this->sourceUrl->getScheme()
-                    : null;
-
+        if (empty($this->absoluteUrl->getPort())) {
+            if (!empty($this->sourceUrl->getPort())) {
+                $scheme = $this->sourceUrl->getScheme() ?? null;
                 $port = $this->sourceUrl->getPort();
 
                 // Apply port only if not https:443
                 if ($port != self::PORT_HTTPS || $scheme != self::SCHEME_HTTPS) {
-                    $this->absoluteUrl->setPort($port);
+                    $this->absoluteUrl = $this->absoluteUrl->withPort($port);
                 }
             }
         }
@@ -98,21 +101,23 @@ class AbsoluteUrlDeriver
 
     private function deriveScheme()
     {
-        if (!$this->absoluteUrl->hasScheme()) {
-            if ($this->sourceUrl->hasScheme()) {
-                $this->absoluteUrl->setScheme($this->sourceUrl->getScheme());
+        if (empty($this->absoluteUrl->getScheme())) {
+            if (!empty($this->sourceUrl->getScheme())) {
+                $this->absoluteUrl = $this->absoluteUrl->withScheme($this->sourceUrl->getScheme());
             }
         }
     }
 
     private function derivePath()
     {
-        if ($this->absoluteUrl->hasPath() && $this->absoluteUrl->getPath()->isRelative()) {
-            if ($this->sourceUrl->hasPath()) {
-                /* @var $pathDirectory Path */
-                $rawPathDirectory = $this->sourceUrl->getPath()->hasFilename()
-                    ? dirname($this->sourceUrl->getPath()) . '/'
-                    : (string)$this->sourceUrl->getPath();
+        $absoluteUrlPath = new Path($this->absoluteUrl->getPath());
+        $sourceUrlPath = new Path($this->sourceUrl->getPath());
+
+        if ($absoluteUrlPath->isRelative()) {
+            if (!empty($this->sourceUrl->getPath())) {
+                $rawPathDirectory = $sourceUrlPath->hasFilename()
+                    ? $sourceUrlPath->getDirectory()
+                    : $this->sourceUrl->getPath();
 
                 $pathDirectory = new Path($rawPathDirectory);
                 $derivedPath = $pathDirectory;
@@ -122,29 +127,22 @@ class AbsoluteUrlDeriver
                 }
 
                 $derivedPath .= $this->absoluteUrl->getPath();
-                $normalisedDerivedPath = new Path((string)$derivedPath);
-                $this->absoluteUrl->setPath($normalisedDerivedPath);
+
+                $this->absoluteUrl = $this->absoluteUrl->withPath($derivedPath);
             }
         }
 
-        if (!$this->absoluteUrl->hasPath()) {
-            if ($this->sourceUrl->hasPath()) {
-                $this->absoluteUrl->setPath($this->sourceUrl->getPath());
+        if (empty($this->absoluteUrl->getPath())) {
+            if (!empty($this->sourceUrl->getPath())) {
+                $this->absoluteUrl = $this->absoluteUrl->withPath($this->sourceUrl->getPath());
             }
         }
     }
 
-    private function deriveUser()
+    private function deriveUserInfo()
     {
-        if (!$this->absoluteUrl->hasUser() && $this->sourceUrl->hasUser()) {
-            $this->absoluteUrl->setUser($this->sourceUrl->getUser());
-        }
-    }
-
-    private function derivePass()
-    {
-        if (!$this->absoluteUrl->hasPass() && $this->sourceUrl->hasPass()) {
-            $this->absoluteUrl->setPass($this->sourceUrl->getPass());
+        if (empty($this->absoluteUrl->getUserInfo()) && !empty($this->sourceUrl->getUserInfo())) {
+            $this->absoluteUrl = $this->absoluteUrl->withUserInfo($this->sourceUrl->getUserInfo());
         }
     }
 }
