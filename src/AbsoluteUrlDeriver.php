@@ -36,16 +36,22 @@ class AbsoluteUrlDeriver
 
     public function init(string $nonAbsoluteUrl, string $sourceUrl)
     {
+        $this->sourceUrl = new Uri($sourceUrl);
         $this->nonAbsoluteUrl = (trim($nonAbsoluteUrl) == '')
-                ? new Uri($sourceUrl)
+                ? $this->sourceUrl
                 : new Uri($nonAbsoluteUrl);
 
-        $this->sourceUrl = new Uri($sourceUrl);
-        $this->absoluteUrl = null;
+        if ($this->nonAbsoluteUrl === $this->sourceUrl) {
+            $this->absoluteUrl = clone $this->sourceUrl;
+        } elseif ((string) $this->nonAbsoluteUrl === (string) $this->sourceUrl) {
+            $this->absoluteUrl = clone $this->sourceUrl;
+        } else {
+            $this->absoluteUrl = null;
 
-        $this->deriveAbsoluteUrl();
+            $this->deriveAbsoluteUrl();
 
-        $this->absoluteUrl = Normalizer::normalize($this->absoluteUrl);
+            $this->absoluteUrl = Normalizer::normalize($this->absoluteUrl);
+        }
     }
 
     public function getAbsoluteUrl(): ?UriInterface
