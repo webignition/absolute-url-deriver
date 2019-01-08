@@ -5,54 +5,12 @@ namespace webignition\AbsoluteUrlDeriver;
 use Psr\Http\Message\UriInterface;
 use webignition\Uri\Normalizer;
 use webignition\Uri\Path;
-use webignition\Uri\Uri;
 
 class AbsoluteUrlDeriver
 {
     const PORT_HTTPS = 443;
     const SCHEME_HTTPS = 'https';
 
-    /**
-     * @var UriInterface
-     */
-    private $nonAbsoluteUrl = null;
-
-    /**
-     * @var UriInterface
-     */
-    private $sourceUrl = null;
-
-    /**
-     * @var UriInterface
-     */
-    private $absoluteUrl = null;
-
-    public function __construct(?string $nonAbsoluteUrl = null, ?string $sourceUrl = null)
-    {
-        if (!is_null($nonAbsoluteUrl) && !is_null($sourceUrl)) {
-            $this->init($nonAbsoluteUrl, $sourceUrl);
-        }
-    }
-
-    public function init(string $nonAbsoluteUrl, string $sourceUrl)
-    {
-        $this->sourceUrl = new Uri($sourceUrl);
-        $this->nonAbsoluteUrl = (trim($nonAbsoluteUrl) == '')
-                ? $this->sourceUrl
-                : new Uri($nonAbsoluteUrl);
-
-        if ($this->nonAbsoluteUrl === $this->sourceUrl) {
-            $this->absoluteUrl = clone $this->sourceUrl;
-        } elseif ((string) $this->nonAbsoluteUrl === (string) $this->sourceUrl) {
-            $this->absoluteUrl = clone $this->sourceUrl;
-        } else {
-            $this->absoluteUrl = null;
-
-            $this->deriveAbsoluteUrl();
-
-            $this->absoluteUrl = Normalizer::normalize($this->absoluteUrl);
-        }
-    }
 
     public function derive(UriInterface $base, UriInterface $relative)
     {
@@ -83,33 +41,6 @@ class AbsoluteUrlDeriver
         }
 
         return Normalizer::normalize($absolute);
-    }
-
-    public function getAbsoluteUrl(): ?UriInterface
-    {
-        return $this->absoluteUrl;
-    }
-
-    private function deriveAbsoluteUrl()
-    {
-        $this->absoluteUrl = clone $this->nonAbsoluteUrl;
-
-        $isAbsolute = !empty($this->absoluteUrl->getScheme()) && !empty($this->absoluteUrl->getHost());
-
-        if (!$isAbsolute) {
-            $isProtocolRelative = empty($this->absoluteUrl->getScheme()) && !empty($this->absoluteUrl->getHost());
-
-            if ($isProtocolRelative) {
-                $this->deriveScheme();
-            } else {
-                $this->derivePath();
-                $this->deriveHost();
-                $this->derivePort();
-                $this->deriveScheme();
-
-                $this->deriveUserInfo();
-            }
-        }
     }
 
     private function deriveHost(UriInterface $base, UriInterface $relative): UriInterface
