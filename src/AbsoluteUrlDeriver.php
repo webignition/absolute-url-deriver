@@ -54,6 +54,37 @@ class AbsoluteUrlDeriver
         }
     }
 
+    public function derive(UriInterface $base, UriInterface $relative)
+    {
+        if ((string) $relative === '') {
+            return clone $base;
+        }
+
+        if ((string) $relative === (string) $base) {
+            return clone $base;
+        }
+
+        $absolute = clone $relative;
+
+        $isAbsolute = !empty($absolute->getScheme()) && !empty($absolute->getHost());
+
+        if (!$isAbsolute) {
+            $isProtocolRelative = empty($absolute->getScheme()) && !empty($absolute->getHost());
+
+            if ($isProtocolRelative) {
+                $absolute = $this->deriveScheme($base, $absolute);
+            } else {
+                $absolute = $this->derivePath($base, $absolute);
+                $absolute = $this->deriveHost($base, $absolute);
+                $absolute = $this->derivePort($base, $absolute);
+                $absolute = $this->deriveScheme($base, $absolute);
+                $absolute = $this->deriveUserInfo($base, $absolute);
+            }
+        }
+
+        return Normalizer::normalize($absolute);
+    }
+
     public function getAbsoluteUrl(): ?UriInterface
     {
         return $this->absoluteUrl;
@@ -81,49 +112,55 @@ class AbsoluteUrlDeriver
         }
     }
 
-    private function deriveHost()
+    private function deriveHost(UriInterface $base, UriInterface $relative): UriInterface
     {
-        if (empty($this->absoluteUrl->getHost())) {
-            if (!empty($this->sourceUrl->getHost())) {
-                $this->absoluteUrl = $this->absoluteUrl->withHost($this->sourceUrl->getHost());
+        if (empty($relative->getHost())) {
+            if (!empty($base->getHost())) {
+                $relative = $relative->withHost($base->getHost());
             }
         }
+
+        return $relative;
     }
 
-    private function derivePort()
+    private function derivePort(UriInterface $base, UriInterface $relative): UriInterface
     {
-        if (empty($this->absoluteUrl->getPort())) {
-            if (!empty($this->sourceUrl->getPort())) {
-                $scheme = $this->sourceUrl->getScheme() ?? null;
-                $port = $this->sourceUrl->getPort();
+        if (empty($relative->getPort())) {
+            if (!empty($base->getPort())) {
+                $scheme = $base->getScheme() ?? null;
+                $port = $base->getPort();
 
                 // Apply port only if not https:443
                 if ($port != self::PORT_HTTPS || $scheme != self::SCHEME_HTTPS) {
-                    $this->absoluteUrl = $this->absoluteUrl->withPort($port);
+                    $relative = $relative->withPort($port);
                 }
             }
         }
+
+        return $relative;
     }
 
-    private function deriveScheme()
+    private function deriveScheme(UriInterface $base, UriInterface $relative): UriInterface
     {
-        if (empty($this->absoluteUrl->getScheme())) {
-            if (!empty($this->sourceUrl->getScheme())) {
-                $this->absoluteUrl = $this->absoluteUrl->withScheme($this->sourceUrl->getScheme());
+        if (empty($relative->getScheme())) {
+            if (!empty($base->getScheme())) {
+                return $relative->withScheme($base->getScheme());
             }
         }
+
+        return $relative;
     }
 
-    private function derivePath()
+    private function derivePath(UriInterface $base, UriInterface $relative): UriInterface
     {
-        $absoluteUrlPath = new Path($this->absoluteUrl->getPath());
-        $sourceUrlPath = new Path($this->sourceUrl->getPath());
+        $relativeUrlPath = new Path($relative->getPath());
+        $baseUrlPath = new Path($base->getPath());
 
-        if ($absoluteUrlPath->isRelative()) {
-            if (!empty($this->sourceUrl->getPath())) {
-                $rawPathDirectory = $sourceUrlPath->hasFilename()
-                    ? $sourceUrlPath->getDirectory()
-                    : $this->sourceUrl->getPath();
+        if ($relativeUrlPath->isRelative()) {
+            if (!empty($base->getPath())) {
+                $rawPathDirectory = $baseUrlPath->hasFilename()
+                    ? $baseUrlPath->getDirectory()
+                    : $base->getPath();
 
                 $pathDirectory = new Path($rawPathDirectory);
                 $derivedPath = $pathDirectory;
@@ -132,23 +169,27 @@ class AbsoluteUrlDeriver
                     $derivedPath .= '/../';
                 }
 
-                $derivedPath .= $this->absoluteUrl->getPath();
+                $derivedPath .= $relative->getPath();
 
-                $this->absoluteUrl = $this->absoluteUrl->withPath($derivedPath);
+                $relative = $relative->withPath($derivedPath);
             }
         }
 
-        if (empty($this->absoluteUrl->getPath())) {
-            if (!empty($this->sourceUrl->getPath())) {
-                $this->absoluteUrl = $this->absoluteUrl->withPath($this->sourceUrl->getPath());
+        if (empty($relative->getPath())) {
+            if (!empty($base->getPath())) {
+                $relative = $relative->withPath($base->getPath());
             }
         }
+
+        return $relative;
     }
 
-    private function deriveUserInfo()
+    private function deriveUserInfo(UriInterface $base, UriInterface $relative): UriInterface
     {
-        if (empty($this->absoluteUrl->getUserInfo()) && !empty($this->sourceUrl->getUserInfo())) {
-            $this->absoluteUrl = $this->absoluteUrl->withUserInfo($this->sourceUrl->getUserInfo());
+        if (empty($relative->getUserInfo()) && !empty($base->getUserInfo())) {
+            $relative = $relative->withUserInfo($base->getUserInfo());
         }
+
+        return $relative;
     }
 }
