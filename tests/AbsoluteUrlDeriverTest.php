@@ -2,8 +2,8 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
+use Psr\Http\Message\UriInterface;
 use webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver;
-use webignition\Url\Url;
 
 class AbsoluteUrlDeriverTest extends \PHPUnit\Framework\TestCase
 {
@@ -27,7 +27,7 @@ class AbsoluteUrlDeriverTest extends \PHPUnit\Framework\TestCase
 
         $absoluteUrl = $absoluteUrlDeriver->getAbsoluteUrl();
 
-        $this->assertInstanceOf(Url::class, $absoluteUrl);
+        $this->assertInstanceOf(UriInterface::class, $absoluteUrl);
         $this->assertEquals($expectedAbsoluteUrl, (string)$absoluteUrl);
     }
 
@@ -63,11 +63,6 @@ class AbsoluteUrlDeriverTest extends \PHPUnit\Framework\TestCase
                 'nonAbsoluteUrl' => '//foo.example.com/',
                 'sourceUrl' => 'https://example.com/bar/',
                 'expectedAbsoluteUrl' => 'https://foo.example.com/',
-            ],
-            'hash only' => [
-                'nonAbsoluteUrl' => '#',
-                'sourceUrl' => 'http://example.com/',
-                'expectedAbsoluteUrl' => 'http://example.com/#',
             ],
             'hash and identifier' => [
                 'nonAbsoluteUrl' => '#bar',
@@ -127,7 +122,7 @@ class AbsoluteUrlDeriverTest extends \PHPUnit\Framework\TestCase
             'relative path; source not has path, user, empty pass' => [
                 'nonAbsoluteUrl' => '/file.html',
                 'sourceUrl' => 'http://user:@example.com',
-                'expectedAbsoluteUrl' => 'http://user:@example.com/file.html',
+                'expectedAbsoluteUrl' => 'http://user@example.com/file.html',
             ],
             'relative path; source not has path, user, pass' => [
                 'nonAbsoluteUrl' => '/file.html',
