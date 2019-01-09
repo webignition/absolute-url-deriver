@@ -14,46 +14,43 @@ class AbsoluteUrlDeriver
             return $base;
         }
 
-        if ($relative->getScheme() != '') {
+        if ('' !== $relative->getScheme()) {
             return Normalizer::normalize($relative);
         }
 
-        if ($relative->getAuthority() != '') {
-            $targetAuthority = $relative->getAuthority();
-            $targetPath = $relative->getPath();
-            $targetQuery = $relative->getQuery();
-        } else {
-            $targetAuthority = $base->getAuthority();
-            if ($relative->getPath() === '') {
-                $targetPath = $base->getPath();
-                $targetQuery = $relative->getQuery() != '' ? $relative->getQuery() : $base->getQuery();
+        if ('' === $relative->getAuthority()) {
+            $authority = $base->getAuthority();
+
+            if ('' === $relative->getPath()) {
+                $path = $base->getPath();
+                $query = '' === $relative->getQuery() ? $base->getQuery() : $relative->getQuery();
             } else {
-                if ($relative->getPath()[0] === '/') {
-                    $targetPath = $relative->getPath();
+                if ('/' === $relative->getPath()[0]) {
+                    $path = $relative->getPath();
                 } else {
-                    if ($targetAuthority != '' && $base->getPath() === '') {
-                        $targetPath = '/' . $relative->getPath();
+                    if ('' !== $authority && '' === $base->getPath()) {
+                        $path = '/' . $relative->getPath();
                     } else {
-                        $lastSlashPos = strrpos($base->getPath(), '/');
-                        if ($lastSlashPos === false) {
-                            $targetPath = $relative->getPath();
+                        $basePathLastSlashPosition = strrpos($base->getPath(), '/');
+                        if (false === $basePathLastSlashPosition) {
+                            $path = $relative->getPath();
                         } else {
-                            $targetPath = substr($base->getPath(), 0, $lastSlashPos + 1) . $relative->getPath();
+                            $path =
+                                substr($base->getPath(), 0, $basePathLastSlashPosition + 1) .
+                                $relative->getPath();
                         }
                     }
                 }
 
-                $targetQuery = $relative->getQuery();
+                $query = $relative->getQuery();
             }
+        } else {
+            $authority = $relative->getAuthority();
+            $path = $relative->getPath();
+            $query = $relative->getQuery();
         }
 
-        $absolute = Uri::compose(
-            $base->getScheme(),
-            $targetAuthority,
-            $targetPath,
-            $targetQuery,
-            $relative->getFragment()
-        );
+        $absolute = Uri::compose($base->getScheme(), $authority, $path, $query, $relative->getFragment());
 
         return Normalizer::normalize($absolute, Normalizer::REMOVE_PATH_DOT_SEGMENTS);
     }

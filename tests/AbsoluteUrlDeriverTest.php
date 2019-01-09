@@ -161,6 +161,16 @@ class AbsoluteUrlDeriverTest extends \PHPUnit\Framework\TestCase
                 'relative' => '/file.html',
                 'expectedUrl' => 'https://example.com:80/file.html',
             ],
+            'path: relative[path not empty, path not starts with slash, no authority], base has no path' => [
+                'base' => 'https://example.com',
+                'relative' => 'path',
+                'expectedUrl' => 'https://example.com/path',
+            ],
+            'path: relative[path only, path not empty, path not starts with slash], base [path only]' => [
+                'base' => 'path1',
+                'relative' => 'path2',
+                'expectedUrl' => 'path2',
+            ],
         ];
     }
 
