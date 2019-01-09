@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8e9fb983ed7663e681b846b701d904fd",
+    "content-hash": "22b71d68a2c39b4e747fae0cd7f6def4",
     "packages": [
         {
             "name": "mso/idna-convert",
@@ -107,16 +107,16 @@
         },
         {
             "name": "webignition/uri",
-            "version": "0.1",
+            "version": "0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/uri.git",
-                "reference": "9d7b91303c1d593eb765da483d36529c3fdef8e0"
+                "reference": "18fe8ca5a6f266699ae65224f04237b5765e8327"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/uri/zipball/9d7b91303c1d593eb765da483d36529c3fdef8e0",
-                "reference": "9d7b91303c1d593eb765da483d36529c3fdef8e0",
+                "url": "https://api.github.com/repos/webignition/uri/zipball/18fe8ca5a6f266699ae65224f04237b5765e8327",
+                "reference": "18fe8ca5a6f266699ae65224f04237b5765e8327",
                 "shasum": ""
             },
             "require": {
@@ -158,7 +158,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2019-01-08T18:30:33+00:00"
+            "time": "2019-01-09T16:54:07+00:00"
         },
         {
             "name": "xrstf/ip-utils",

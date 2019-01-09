@@ -4,81 +4,54 @@ namespace webignition\AbsoluteUrlDeriver;
 
 use Psr\Http\Message\UriInterface;
 use webignition\Uri\Normalizer;
-use webignition\Uri\Path;
+use webignition\Uri\Uri;
 
 class AbsoluteUrlDeriver
 {
-    const PORT_HTTPS = 443;
-    const SCHEME_HTTPS = 'https';
-
-
     public function derive(UriInterface $base, UriInterface $relative)
     {
         if ((string) $relative === '') {
-            return clone $base;
+            return $base;
         }
 
-        if ((string) $relative === (string) $base) {
-            return clone $base;
+        if ('' !== $relative->getScheme()) {
+            return Normalizer::normalize($relative);
         }
 
-        $absolute = clone $relative;
+        if ('' === $relative->getAuthority()) {
+            $authority = $base->getAuthority();
 
-        $isAbsolute = !empty($absolute->getScheme()) && !empty($absolute->getHost());
-
-        if (!$isAbsolute) {
-            $isProtocolRelative = empty($absolute->getScheme()) && !empty($absolute->getHost());
-
-            if ($isProtocolRelative) {
-                $absolute = $absolute->withScheme($base->getScheme());
+            if ('' === $relative->getPath()) {
+                $path = $base->getPath();
+                $query = '' === $relative->getQuery() ? $base->getQuery() : $relative->getQuery();
             } else {
-                if (empty($absolute->getScheme())) {
-                    $absolute = $absolute->withScheme($base->getScheme());
-                }
-
-                if (empty($absolute->getHost())) {
-                    $absolute = $absolute->withHost($base->getHost());
-                }
-
-                if (empty($absolute->getPort())) {
-                    $absolute = $absolute->withPort($base->getPort());
-                }
-
-                if (empty($relative->getPath())) {
-                    $absolute = $absolute->withPath($base->getPath());
+                if ('/' === $relative->getPath()[0]) {
+                    $path = $relative->getPath();
                 } else {
-                    $absolute = $this->derivePath($base, $absolute);
+                    if ('' !== $authority && '' === $base->getPath()) {
+                        $path = '/' . $relative->getPath();
+                    } else {
+                        $basePathLastSlashPosition = strrpos($base->getPath(), '/');
+                        if (false === $basePathLastSlashPosition) {
+                            $path = $relative->getPath();
+                        } else {
+                            $path =
+                                substr($base->getPath(), 0, $basePathLastSlashPosition + 1) .
+                                $relative->getPath();
+                        }
+                    }
                 }
 
-                if (empty($absolute->getUserInfo())) {
-                    $absolute = $absolute->withUserInfo($base->getUserInfo());
-                }
+                $query = $relative->getQuery();
             }
+        } else {
+            $authority = $relative->getAuthority();
+            $path = $relative->getPath();
+            $query = $relative->getQuery();
         }
 
-        return Normalizer::normalize($absolute);
-    }
+        $absolute = Uri::compose($base->getScheme(), $authority, $path, $query, $relative->getFragment());
 
-    private function derivePath(UriInterface $base, UriInterface $relative): UriInterface
-    {
-        $relativeUrlPath = new Path($relative->getPath());
-
-        if ($relativeUrlPath->isRelative()) {
-            $basePath = $base->getPath();
-
-            if (!empty($basePath)) {
-                $derivedPath = $basePath;
-
-                if ('/' !== $derivedPath[-1]) {
-                    $derivedPath .= '/../';
-                }
-
-                $derivedPath .= $relative->getPath();
-
-                $relative = $relative->withPath($derivedPath);
-            }
-        }
-
-        return $relative;
+        return Normalizer::normalize($absolute, Normalizer::REMOVE_PATH_DOT_SEGMENTS);
     }
 }
