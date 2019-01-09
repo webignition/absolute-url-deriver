@@ -21,9 +21,12 @@ Usage
 use webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver;
 use webignition\Uri\Uri;
 
+$base = 'https://example.com';
+$relative = '/path?query#fragment';
+
 $this->assertEquals(
-    'http://www.example.com/server.php?param1=value1', 
-    AbsoluteUrlDeriver::derive(new Uri($base), new Uri($relative)
+    'https://example.com/path?query#fragment', 
+    AbsoluteUrlDeriver::derive(new Uri($base), new Uri($relative))
 );
 ```
 
