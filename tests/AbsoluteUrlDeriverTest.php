@@ -20,9 +20,7 @@ class AbsoluteUrlDeriverTest extends \PHPUnit\Framework\TestCase
      */
     public function testDerive(string $base, string $relative, string $expectedUrl)
     {
-        $absoluteUrlDeriver = new AbsoluteUrlDeriver();
-
-        $absoluteUrl = $absoluteUrlDeriver->derive(new Uri($base), new Uri($relative));
+        $absoluteUrl = AbsoluteUrlDeriver::derive(new Uri($base), new Uri($relative));
 
         $this->assertInstanceOf(UriInterface::class, $absoluteUrl);
         $this->assertEquals($expectedUrl, (string) $absoluteUrl);

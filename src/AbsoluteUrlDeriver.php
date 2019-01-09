@@ -8,7 +8,7 @@ use webignition\Uri\Uri;
 
 class AbsoluteUrlDeriver
 {
-    public function derive(UriInterface $base, UriInterface $relative)
+    public static function derive(UriInterface $base, UriInterface $relative)
     {
         if ((string) $relative === '') {
             return $base;
