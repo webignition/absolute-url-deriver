@@ -58,10 +58,15 @@ class AbsoluteUrlDeriverTest extends \PHPUnit\Framework\TestCase
                 'base' => 'https://example.com/bar/',
                 'expectedUrl' => 'https://foo.example.com/',
             ],
-            'hash and identifier' => [
+            'hash and identifier, empty relative path, empty base path' => [
                 'relative' => '#bar',
                 'base' => 'http://example.com/',
                 'expectedUrl' => 'http://example.com/#bar',
+            ],
+            'hash and identifier, empty relative path, non-empty base path' => [
+                'relative' => '#bar',
+                'base' => 'http://example.com/foo/',
+                'expectedUrl' => 'http://example.com/foo/#bar',
             ],
             'absolute path; no query string' => [
                 'relative' => '/foo',
