@@ -4,81 +4,57 @@ namespace webignition\AbsoluteUrlDeriver;
 
 use Psr\Http\Message\UriInterface;
 use webignition\Uri\Normalizer;
-use webignition\Uri\Path;
+use webignition\Uri\Uri;
 
 class AbsoluteUrlDeriver
 {
-    const PORT_HTTPS = 443;
-    const SCHEME_HTTPS = 'https';
-
-
     public function derive(UriInterface $base, UriInterface $relative)
     {
         if ((string) $relative === '') {
-            return clone $base;
+            return $base;
         }
 
-        if ((string) $relative === (string) $base) {
-            return clone $base;
+        if ($relative->getScheme() != '') {
+            return Normalizer::normalize($relative);
         }
 
-        $absolute = clone $relative;
-
-        $isAbsolute = !empty($absolute->getScheme()) && !empty($absolute->getHost());
-
-        if (!$isAbsolute) {
-            $isProtocolRelative = empty($absolute->getScheme()) && !empty($absolute->getHost());
-
-            if ($isProtocolRelative) {
-                $absolute = $absolute->withScheme($base->getScheme());
+        if ($relative->getAuthority() != '') {
+            $targetAuthority = $relative->getAuthority();
+            $targetPath = $relative->getPath();
+            $targetQuery = $relative->getQuery();
+        } else {
+            $targetAuthority = $base->getAuthority();
+            if ($relative->getPath() === '') {
+                $targetPath = $base->getPath();
+                $targetQuery = $relative->getQuery() != '' ? $relative->getQuery() : $base->getQuery();
             } else {
-                if (empty($absolute->getScheme())) {
-                    $absolute = $absolute->withScheme($base->getScheme());
-                }
-
-                if (empty($absolute->getHost())) {
-                    $absolute = $absolute->withHost($base->getHost());
-                }
-
-                if (empty($absolute->getPort())) {
-                    $absolute = $absolute->withPort($base->getPort());
-                }
-
-                if (empty($relative->getPath())) {
-                    $absolute = $absolute->withPath($base->getPath());
+                if ($relative->getPath()[0] === '/') {
+                    $targetPath = $relative->getPath();
                 } else {
-                    $absolute = $this->derivePath($base, $absolute);
+                    if ($targetAuthority != '' && $base->getPath() === '') {
+                        $targetPath = '/' . $relative->getPath();
+                    } else {
+                        $lastSlashPos = strrpos($base->getPath(), '/');
+                        if ($lastSlashPos === false) {
+                            $targetPath = $relative->getPath();
+                        } else {
+                            $targetPath = substr($base->getPath(), 0, $lastSlashPos + 1) . $relative->getPath();
+                        }
+                    }
                 }
 
-                if (empty($absolute->getUserInfo())) {
-                    $absolute = $absolute->withUserInfo($base->getUserInfo());
-                }
+                $targetQuery = $relative->getQuery();
             }
         }
 
-        return Normalizer::normalize($absolute);
-    }
+        $absolute = Uri::compose(
+            $base->getScheme(),
+            $targetAuthority,
+            $targetPath,
+            $targetQuery,
+            $relative->getFragment()
+        );
 
-    private function derivePath(UriInterface $base, UriInterface $relative): UriInterface
-    {
-        $relativeUrlPath = new Path($relative->getPath());
-
-        if ($relativeUrlPath->isRelative()) {
-            $basePath = $base->getPath();
-
-            if (!empty($basePath)) {
-                $derivedPath = $basePath;
-
-                if ('/' !== $derivedPath[-1]) {
-                    $derivedPath .= '/../';
-                }
-
-                $derivedPath .= $relative->getPath();
-
-                $relative = $relative->withPath($derivedPath);
-            }
-        }
-
-        return $relative;
+        return Normalizer::normalize($absolute, Normalizer::REMOVE_PATH_DOT_SEGMENTS);
     }
 }
