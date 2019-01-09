@@ -2,149 +2,56 @@
 
 namespace webignition\AbsoluteUrlDeriver;
 
-use webignition\NormalisedUrl\NormalisedUrl;
-use webignition\NormalisedUrl\Path\Path;
-use webignition\Url\Url;
+use Psr\Http\Message\UriInterface;
+use webignition\Uri\Normalizer;
+use webignition\Uri\Uri;
 
 class AbsoluteUrlDeriver
 {
-    const PORT_HTTPS = 443;
-    const SCHEME_HTTPS = 'https';
-
-    /**
-     * @var NormalisedUrl
-     */
-    private $nonAbsoluteUrl = null;
-
-    /**
-     * @var NormalisedUrl
-     */
-    private $sourceUrl = null;
-
-    /**
-     * @var NormalisedUrl
-     */
-    private $absoluteUrl = null;
-
-    public function __construct(?string $nonAbsoluteUrl = null, ?string $sourceUrl = null)
+    public static function derive(UriInterface $base, UriInterface $relative)
     {
-        if (!is_null($nonAbsoluteUrl) && !is_null($sourceUrl)) {
-            $this->init($nonAbsoluteUrl, $sourceUrl);
+        if ((string) $relative === '') {
+            return $base;
         }
-    }
 
-    public function init(string $nonAbsoluteUrl, string $sourceUrl)
-    {
-        $this->nonAbsoluteUrl = (trim($nonAbsoluteUrl) == '')
-                ? new Url($sourceUrl)
-                : new Url($nonAbsoluteUrl);
+        if ('' !== $relative->getScheme()) {
+            return Normalizer::normalize($relative);
+        }
 
-        $this->sourceUrl = new NormalisedUrl($sourceUrl);
-        $this->absoluteUrl = null;
+        if ('' === $relative->getAuthority()) {
+            $authority = $base->getAuthority();
 
-        $this->deriveAbsoluteUrl();
-    }
-
-    public function getAbsoluteUrl(): ?Url
-    {
-        return $this->absoluteUrl;
-    }
-
-    private function deriveAbsoluteUrl()
-    {
-        $this->absoluteUrl = clone $this->nonAbsoluteUrl;
-
-        if (!$this->absoluteUrl->isAbsolute()) {
-            if ($this->absoluteUrl->isProtocolRelative()) {
-                $this->deriveScheme();
+            if ('' === $relative->getPath()) {
+                $path = $base->getPath();
+                $query = '' === $relative->getQuery() ? $base->getQuery() : $relative->getQuery();
             } else {
-                $this->derivePath();
-                $this->deriveHost();
-                $this->derivePort();
-                $this->deriveScheme();
-
-                $this->deriveUser();
-                $this->derivePass();
-            }
-        }
-    }
-
-    private function deriveHost()
-    {
-        if (!$this->absoluteUrl->hasHost()) {
-            if ($this->sourceUrl->hasHost()) {
-                $this->absoluteUrl->setHost($this->sourceUrl->getHost());
-            }
-        }
-    }
-
-    private function derivePort()
-    {
-        if (!$this->absoluteUrl->hasPort()) {
-            if ($this->sourceUrl->hasPort()) {
-                $scheme = $this->sourceUrl->hasScheme()
-                    ? $this->sourceUrl->getScheme()
-                    : null;
-
-                $port = $this->sourceUrl->getPort();
-
-                // Apply port only if not https:443
-                if ($port != self::PORT_HTTPS || $scheme != self::SCHEME_HTTPS) {
-                    $this->absoluteUrl->setPort($port);
-                }
-            }
-        }
-    }
-
-    private function deriveScheme()
-    {
-        if (!$this->absoluteUrl->hasScheme()) {
-            if ($this->sourceUrl->hasScheme()) {
-                $this->absoluteUrl->setScheme($this->sourceUrl->getScheme());
-            }
-        }
-    }
-
-    private function derivePath()
-    {
-        if ($this->absoluteUrl->hasPath() && $this->absoluteUrl->getPath()->isRelative()) {
-            if ($this->sourceUrl->hasPath()) {
-                /* @var $pathDirectory Path */
-                $rawPathDirectory = $this->sourceUrl->getPath()->hasFilename()
-                    ? dirname($this->sourceUrl->getPath()) . '/'
-                    : (string)$this->sourceUrl->getPath();
-
-                $pathDirectory = new Path($rawPathDirectory);
-                $derivedPath = $pathDirectory;
-
-                if (!$pathDirectory->hasTrailingSlash()) {
-                    $derivedPath .= '/../';
+                if ('/' === $relative->getPath()[0]) {
+                    $path = $relative->getPath();
+                } else {
+                    if ('' !== $authority && '' === $base->getPath()) {
+                        $path = '/' . $relative->getPath();
+                    } else {
+                        $basePathLastSlashPosition = strrpos($base->getPath(), '/');
+                        if (false === $basePathLastSlashPosition) {
+                            $path = $relative->getPath();
+                        } else {
+                            $path =
+                                substr($base->getPath(), 0, $basePathLastSlashPosition + 1) .
+                                $relative->getPath();
+                        }
+                    }
                 }
 
-                $derivedPath .= $this->absoluteUrl->getPath();
-                $normalisedDerivedPath = new Path((string)$derivedPath);
-                $this->absoluteUrl->setPath($normalisedDerivedPath);
+                $query = $relative->getQuery();
             }
+        } else {
+            $authority = $relative->getAuthority();
+            $path = $relative->getPath();
+            $query = $relative->getQuery();
         }
 
-        if (!$this->absoluteUrl->hasPath()) {
-            if ($this->sourceUrl->hasPath()) {
-                $this->absoluteUrl->setPath($this->sourceUrl->getPath());
-            }
-        }
-    }
+        $absolute = Uri::compose($base->getScheme(), $authority, $path, $query, $relative->getFragment());
 
-    private function deriveUser()
-    {
-        if (!$this->absoluteUrl->hasUser() && $this->sourceUrl->hasUser()) {
-            $this->absoluteUrl->setUser($this->sourceUrl->getUser());
-        }
-    }
-
-    private function derivePass()
-    {
-        if (!$this->absoluteUrl->hasPass() && $this->sourceUrl->hasPass()) {
-            $this->absoluteUrl->setPass($this->sourceUrl->getPass());
-        }
+        return Normalizer::normalize($absolute, Normalizer::REMOVE_PATH_DOT_SEGMENTS);
     }
 }

@@ -18,12 +18,16 @@ Usage
 
 ```php
 <?php
-$deriver = new \webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver(
-    '/server.php?param1=value1',
-    'http://www.example.com/pathOne/pathTwo/pathThree'
-);
+use webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver;
+use webignition\Uri\Uri;
 
-$this->assertEquals('http://www.example.com/server.php?param1=value1', $deriver->getAbsoluteUrl());
+$base = 'https://example.com';
+$relative = '/path?query#fragment';
+
+$this->assertEquals(
+    'https://example.com/path?query#fragment', 
+    AbsoluteUrlDeriver::derive(new Uri($base), new Uri($relative))
+);
 ```
 
 Building
@@ -35,7 +39,7 @@ If used as a dependency by another project, update that project's composer.json
 and update your dependencies.
 
     "require": {
-        "webignition/absolute-url-deriver": "*"      
+        "webignition/absolute-url-deriver": ">=3,<4"      
     }
 
 #### Developing
@@ -46,10 +50,10 @@ This project has external dependencies managed with [composer][3]. Get and insta
     mkdir ~/absolute-url-deriver && cd ~/absolute-url-deriver
 
     # Clone repository
-    git clone git@github.com:webignition/absolute-url-deriver.git.
+    git clone git@github.com:webignition/absolute-url-deriver.git .
 
     # Retrieve/update dependencies
-    composer.phar install
+    composer install
 
 Testing
 -------

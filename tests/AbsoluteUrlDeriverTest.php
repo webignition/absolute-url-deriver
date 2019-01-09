@@ -2,167 +2,309 @@
 
 namespace webignition\Tests\AbsoluteUrlDeriver;
 
+use Psr\Http\Message\UriInterface;
 use webignition\AbsoluteUrlDeriver\AbsoluteUrlDeriver;
-use webignition\Url\Url;
+use webignition\Uri\Uri;
 
 class AbsoluteUrlDeriverTest extends \PHPUnit\Framework\TestCase
 {
-    public function testGetAbsoluteUrlEmptyInput()
-    {
-        $absoluteUrlDeriver = new AbsoluteUrlDeriver();
-
-        $this->assertNull($absoluteUrlDeriver->getAbsoluteUrl());
-    }
+    const RFC3986_BASE = 'http://a/b/c/d;p?q';
 
     /**
-     * @dataProvider getAbsoluteUrlDataProvider
+     * @dataProvider deriveRfc3986DataProvider
+     * @dataProvider deriveDataProvider
      *
-     * @param string $nonAbsoluteUrl
-     * @param string $sourceUrl
-     * @param string $expectedAbsoluteUrl
+     * @param string $base
+     * @param string $relative
+     * @param string $expectedUrl
      */
-    public function testGetAbsoluteUrl($nonAbsoluteUrl, $sourceUrl, $expectedAbsoluteUrl)
+    public function testDerive(string $base, string $relative, string $expectedUrl)
     {
-        $absoluteUrlDeriver = new AbsoluteUrlDeriver($nonAbsoluteUrl, $sourceUrl);
+        $absoluteUrl = AbsoluteUrlDeriver::derive(new Uri($base), new Uri($relative));
 
-        $absoluteUrl = $absoluteUrlDeriver->getAbsoluteUrl();
-
-        $this->assertInstanceOf(Url::class, $absoluteUrl);
-        $this->assertEquals($expectedAbsoluteUrl, (string)$absoluteUrl);
+        $this->assertInstanceOf(UriInterface::class, $absoluteUrl);
+        $this->assertEquals($expectedUrl, (string) $absoluteUrl);
     }
 
-    public function getAbsoluteUrlDataProvider(): array
+    public function deriveDataProvider(): array
     {
         return [
             'non-absolute url is empty' => [
-                'nonAbsoluteUrl' => '',
-                'sourceUrl' => 'http://example.com/foo/bar',
-                'expectedAbsoluteUrl' => 'http://example.com/foo/bar',
+                'base' => 'http://example.com/foo/bar',
+                'relative' => '',
+                'expectedUrl' => 'http://example.com/foo/bar',
             ],
             'absolute url; identical to source' => [
-                'nonAbsoluteUrl' => 'http://example.com/',
-                'sourceUrl' => 'http://example.com/',
-                'expectedAbsoluteUrl' => 'http://example.com/',
+                'base' => 'http://example.com/',
+                'relative' => 'http://example.com/',
+                'expectedUrl' => 'http://example.com/',
             ],
             'absolute url; different host' => [
-                'nonAbsoluteUrl' => 'http://foo.example.com/',
-                'sourceUrl' => 'http://example.com/',
-                'expectedAbsoluteUrl' => 'http://foo.example.com/',
+                'base' => 'http://example.com/',
+                'relative' => 'http://foo.example.com/',
+                'expectedUrl' => 'http://foo.example.com/',
             ],
             'protocol-relative; http' => [
-                'nonAbsoluteUrl' => '//foo.example.com/',
-                'sourceUrl' => 'http://example.com/',
-                'expectedAbsoluteUrl' => 'http://foo.example.com/',
+                'base' => 'http://example.com/',
+                'relative' => '//foo.example.com/',
+                'expectedUrl' => 'http://foo.example.com/',
             ],
             'protocol-relative; https' => [
-                'nonAbsoluteUrl' => '//foo.example.com/',
-                'sourceUrl' => 'https://example.com/',
-                'expectedAbsoluteUrl' => 'https://foo.example.com/',
+                'base' => 'https://example.com/',
+                'relative' => '//foo.example.com/',
+                'expectedUrl' => 'https://foo.example.com/',
             ],
             'protocol-relative; source path is ignored' => [
-                'nonAbsoluteUrl' => '//foo.example.com/',
-                'sourceUrl' => 'https://example.com/bar/',
-                'expectedAbsoluteUrl' => 'https://foo.example.com/',
+                'base' => 'https://example.com/bar/',
+                'relative' => '//foo.example.com/',
+                'expectedUrl' => 'https://foo.example.com/',
             ],
-            'hash only' => [
-                'nonAbsoluteUrl' => '#',
-                'sourceUrl' => 'http://example.com/',
-                'expectedAbsoluteUrl' => 'http://example.com/#',
+            'hash and identifier, empty relative path, empty base path' => [
+                'base' => 'http://example.com/',
+                'relative' => '#bar',
+                'expectedUrl' => 'http://example.com/#bar',
             ],
-            'hash and identifier' => [
-                'nonAbsoluteUrl' => '#bar',
-                'sourceUrl' => 'http://example.com/',
-                'expectedAbsoluteUrl' => 'http://example.com/#bar',
+            'hash and identifier, empty relative path, non-empty base path' => [
+                'base' => 'http://example.com/foo/',
+                'relative' => '#bar',
+                'expectedUrl' => 'http://example.com/foo/#bar',
             ],
             'absolute path; no query string' => [
-                'nonAbsoluteUrl' => '/foo',
-                'sourceUrl' => 'http://example.com/one/two/three',
-                'expectedAbsoluteUrl' => 'http://example.com/foo',
+                'base' => 'http://example.com/one/two/three',
+                'relative' => '/foo',
+                'expectedUrl' => 'http://example.com/foo',
             ],
             'absolute path; has query string' => [
-                'nonAbsoluteUrl' => '/foo?key=value',
-                'sourceUrl' => 'http://example.com/one/two/three',
-                'expectedAbsoluteUrl' => 'http://example.com/foo?key=value',
+                'base' => 'http://example.com/one/two/three',
+                'relative' => '/foo?key=value',
+                'expectedUrl' => 'http://example.com/foo?key=value',
             ],
             'relative path; no trailing slash on source' => [
-                'nonAbsoluteUrl' => 'file.html',
-                'sourceUrl' => 'http://example.com/path1/path2',
-                'expectedAbsoluteUrl' => 'http://example.com/path1/file.html',
+                'base' => 'http://example.com/path1/path2',
+                'relative' => 'file.html',
+                'expectedUrl' => 'http://example.com/path1/file.html',
             ],
             'relative path; has trailing slash on source' => [
-                'nonAbsoluteUrl' => 'file.html',
-                'sourceUrl' => 'http://example.com/path1/path2/',
-                'expectedAbsoluteUrl' => 'http://example.com/path1/path2/file.html',
+                'base' => 'http://example.com/path1/path2/',
+                'relative' => 'file.html',
+                'expectedUrl' => 'http://example.com/path1/path2/file.html',
             ],
             'relative path; non-absolute url has leading double dot, source has trailing slash' => [
-                'nonAbsoluteUrl' => '../file.html',
-                'sourceUrl' => 'http://example.com/path1/path2/',
-                'expectedAbsoluteUrl' => 'http://example.com/path1/file.html',
+                'base' => 'http://example.com/path1/path2/',
+                'relative' => '../file.html',
+                'expectedUrl' => 'http://example.com/path1/file.html',
             ],
             'relative path; non-absolute url has leading double dot, source not has trailing slash' => [
-                'nonAbsoluteUrl' => '../file.html',
-                'sourceUrl' => 'http://example.com/path1/path2',
-                'expectedAbsoluteUrl' => 'http://example.com/file.html',
+                'base' => 'http://example.com/path1/path2',
+                'relative' => '../file.html',
+                'expectedUrl' => 'http://example.com/file.html',
             ],
             'relative path; non-absolute url has leading single dot, source has trailing slash' => [
-                'nonAbsoluteUrl' => './file.html',
-                'sourceUrl' => 'http://example.com/path1/path2/',
-                'expectedAbsoluteUrl' => 'http://example.com/path1/path2/file.html',
+                'base' => 'http://example.com/path1/path2/',
+                'relative' => './file.html',
+                'expectedUrl' => 'http://example.com/path1/path2/file.html',
             ],
             'relative path; non-absolute url has leading single dot, source not has trailing slash' => [
-                'nonAbsoluteUrl' => './file.html',
-                'sourceUrl' => 'http://example.com/path1/path2',
-                'expectedAbsoluteUrl' => 'http://example.com/path1/file.html',
+                'base' => 'http://example.com/path1/path2',
+                'relative' => './file.html',
+                'expectedUrl' => 'http://example.com/path1/file.html',
             ],
             'relative path; source not has path' => [
-                'nonAbsoluteUrl' => '/file.html',
-                'sourceUrl' => 'http://example.com',
-                'expectedAbsoluteUrl' => 'http://example.com/file.html',
+                'base' => 'http://example.com',
+                'relative' => '/file.html',
+                'expectedUrl' => 'http://example.com/file.html',
             ],
             'relative path; source not has path, user' => [
-                'nonAbsoluteUrl' => '/file.html',
-                'sourceUrl' => 'http://user@example.com',
-                'expectedAbsoluteUrl' => 'http://user@example.com/file.html',
+                'base' => 'http://user@example.com',
+                'relative' => '/file.html',
+                'expectedUrl' => 'http://user@example.com/file.html',
             ],
             'relative path; source not has path, user, empty pass' => [
-                'nonAbsoluteUrl' => '/file.html',
-                'sourceUrl' => 'http://user:@example.com',
-                'expectedAbsoluteUrl' => 'http://user:@example.com/file.html',
+                'base' => 'http://user:@example.com',
+                'relative' => '/file.html',
+                'expectedUrl' => 'http://user@example.com/file.html',
             ],
             'relative path; source not has path, user, pass' => [
-                'nonAbsoluteUrl' => '/file.html',
-                'sourceUrl' => 'http://user:pass@example.com',
-                'expectedAbsoluteUrl' => 'http://user:pass@example.com/file.html',
+                'base' => 'http://user:pass@example.com',
+                'relative' => '/file.html',
+                'expectedUrl' => 'http://user:pass@example.com/file.html',
             ],
             'port; non-standard http' => [
-                'nonAbsoluteUrl' => '/file.html',
-                'sourceUrl' => 'http://example.com:8080',
-                'expectedAbsoluteUrl' => 'http://example.com:8080/file.html',
+                'base' => 'http://example.com:8080',
+                'relative' => '/file.html',
+                'expectedUrl' => 'http://example.com:8080/file.html',
             ],
             'port; non-standard https' => [
-                'nonAbsoluteUrl' => '/file.html',
-                'sourceUrl' => 'https://example.com:8443',
-                'expectedAbsoluteUrl' => 'https://example.com:8443/file.html',
+                'base' => 'https://example.com:8443',
+                'relative' => '/file.html',
+                'expectedUrl' => 'https://example.com:8443/file.html',
             ],
             'port; standard http' => [
-                'nonAbsoluteUrl' => '/file.html',
-                'sourceUrl' => 'http://example.com:80',
-                'expectedAbsoluteUrl' => 'http://example.com/file.html',
+                'base' => 'http://example.com:80',
+                'relative' => '/file.html',
+                'expectedUrl' => 'http://example.com/file.html',
             ],
             'port; standard https' => [
-                'nonAbsoluteUrl' => '/file.html',
-                'sourceUrl' => 'https://example.com:443',
-                'expectedAbsoluteUrl' => 'https://example.com/file.html',
+                'base' => 'https://example.com:443',
+                'relative' => '/file.html',
+                'expectedUrl' => 'https://example.com/file.html',
             ],
             'port; source uses https port for http' => [
-                'nonAbsoluteUrl' => '/file.html',
-                'sourceUrl' => 'http://example.com:443',
-                'expectedAbsoluteUrl' => 'http://example.com:443/file.html',
+                'base' => 'http://example.com:443',
+                'relative' => '/file.html',
+                'expectedUrl' => 'http://example.com:443/file.html',
             ],
             'port; source uses http port for https' => [
-                'nonAbsoluteUrl' => '/file.html',
-                'sourceUrl' => 'https://example.com:80',
-                'expectedAbsoluteUrl' => 'https://example.com:80/file.html',
+                'base' => 'https://example.com:80',
+                'relative' => '/file.html',
+                'expectedUrl' => 'https://example.com:80/file.html',
+            ],
+            'path: relative[path not empty, path not starts with slash, no authority], base has no path' => [
+                'base' => 'https://example.com',
+                'relative' => 'path',
+                'expectedUrl' => 'https://example.com/path',
+            ],
+            'path: relative[path only, path not empty, path not starts with slash], base [path only]' => [
+                'base' => 'path1',
+                'relative' => 'path2',
+                'expectedUrl' => 'path2',
+            ],
+        ];
+    }
+
+    /**
+     * resolve() test cases taken from RFC3986
+     * @see https://tools.ietf.org/html/rfc3986#section-5.4.1
+     *
+     * @return array
+     */
+    public function deriveRfc3986DataProvider(): array
+    {
+        return [
+            'rfc3986#5.2 (1)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => 'g:h',
+                'expectedUrl' => 'g:h',
+            ],
+            'rfc3986#5.2 (2)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => 'g',
+                'expectedUrl' => 'http://a/b/c/g',
+            ],
+            'rfc3986#5.2 (3)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => './g',
+                'expectedUrl' => 'http://a/b/c/g',
+            ],
+            'rfc3986#5.2 (4)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => 'g/',
+                'expectedUrl' => 'http://a/b/c/g/',
+            ],
+            'rfc3986#5.2 (5)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '/g',
+                'expectedUrl' => 'http://a/g',
+            ],
+            'rfc3986#5.2 (6)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '//g',
+                'expectedUrl' => 'http://g',
+            ],
+            'rfc3986#5.2 (7)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '?y',
+                'expectedUrl' => 'http://a/b/c/d;p?y',
+            ],
+            'rfc3986#5.2 (8)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => 'g?y',
+                'expectedUrl' => 'http://a/b/c/g?y',
+            ],
+            'rfc3986#5.2 (9)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '#s',
+                'expectedUrl' => 'http://a/b/c/d;p?q#s',
+            ],
+            'rfc3986#5.2 (10)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => 'g#s',
+                'expectedUrl' => 'http://a/b/c/g#s',
+            ],
+            'rfc3986#5.2 (11)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => 'g?y#s',
+                'expectedUrl' => 'http://a/b/c/g?y#s',
+            ],
+            'rfc3986#5.2 (12)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => ';x',
+                'expectedUrl' => 'http://a/b/c/;x',
+            ],
+            'rfc3986#5.2 (13)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => 'g;x',
+                'expectedUrl' => 'http://a/b/c/g;x',
+            ],
+            'rfc3986#5.2 (14)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => 'g;x?y#s',
+                'expectedUrl' => 'http://a/b/c/g;x?y#s',
+            ],
+            'rfc3986#5.2 (15)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '',
+                'expectedUrl' => self::RFC3986_BASE,
+            ],
+            'rfc3986#5.2 (16)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '.',
+                'expectedUrl' => 'http://a/b/c/',
+            ],
+            'rfc3986#5.2 (17)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => './',
+                'expectedUrl' => 'http://a/b/c/',
+            ],
+            'rfc3986#5.2 (18)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '..',
+                'expectedUrl' => 'http://a/b/',
+            ],
+            'rfc3986#5.2 (19)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '../',
+                'expectedUrl' => 'http://a/b/',
+            ],
+            'rfc3986#5.2 (20)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '../g',
+                'expectedUrl' => 'http://a/b/g',
+            ],
+            'rfc3986#5.2 (21)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '../..',
+                'expectedUrl' => 'http://a/',
+            ],
+            'rfc3986#5.2 (22)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '../../',
+                'expectedUrl' => 'http://a/',
+            ],
+            'rfc3986#5.2 (23)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '../../g',
+                'expectedUrl' => 'http://a/g',
+            ],
+            'rfc3986#5.2 (24)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '../../../g',
+                'expectedUrl' => 'http://a/g',
+            ],
+            'rfc3986#5.2 (25)' => [
+                'base' => self::RFC3986_BASE,
+                'relative' => '../../../../g',
+                'expectedUrl' => 'http://a/g',
             ],
         ];
     }
